@@ -40,7 +40,7 @@ class Log(object):
 class Config(object):
     """config file process
 
-    cf = Config("../config.cfg")
+    cf = Config("config.cfg")
     section = "admin"
     option = "save"
     value = True
