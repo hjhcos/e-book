@@ -7,4 +7,6 @@ python reapp.py
 ```python
 access.py     # 实现网站的数据爬取文件
 reapp.py      # 应用框架程序
+config.ini    # 初始文件 可以删除
+config.cfg    # 配置文件 不可修改 删除
 ```
