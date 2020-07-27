@@ -232,7 +232,7 @@ class APP(object):
         pass
 
     def contentBox(self):
-        """显示文本内容"""
+        """显示文本内容 初始显示内容(未完成)"""
 
         self.font = font.Font(family='楷体', size=15)
         self.text = tk.Text(self.root, font=self.font)
@@ -241,7 +241,6 @@ class APP(object):
         self.text.bind("<Button-1>", lambda x: hide(wg))
         self.text.bind("<Button-3>", lambda x: menuRK(self.root, self.text))
         chapter_id = cf.get(user, "chapter_id")
-        print(chapter_id)
         # writeContent(self.text, )
         # self.text.insert(tk.INSERT, )
 
@@ -253,11 +252,8 @@ def main():
     reader.menuBar()
     reader.contentBox()
     reader.run()
-    pass
 
 
 if __name__ == '__main__':
 
     main()
-
-    pass
