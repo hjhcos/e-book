@@ -307,12 +307,14 @@ def bdExtractLink(wd=BD_wd, url_id=1, url=BD):
     :return:
     """
     detection = True
+    count = 3
     BD_list = ['&wd=' + wd, '&si=' + BD_si[url_id], '&ct=' + str(BD_ct), '&tn=' + BD_tn]
     try:
         while detection:
             if 'baidu' in url:
                 BD_list = shuffle(BD_list)
                 if not '/link?' in url:
+                    count -= 1
                     url = BD_search
                     for bd in BD_list:
                         url += bd
@@ -322,7 +324,7 @@ def bdExtractLink(wd=BD_wd, url_id=1, url=BD):
                 html = etree.HTML(html)
                 # get target link from baidu
                 html_data = html.xpath('/html/body/div/div[3]/div[1]/div[4]/div[1]/div[2]/a[1]/@href')
-                if html_data[0] is not None:
+                if html_data[0] is not None or count < 0:
                     detection = False
                 if not detection:
                     return html_data[0]
@@ -348,11 +350,9 @@ def getHtml(url, wd=BD_wd, url_id=URL_id):
     try:
         # 传说的“七秒效应”
         html = get(url, headers=header, timeout=7)
-        sleep(2)   # wait 2s
         html.encoding = 'utf-8'
         logger.info("{} \t {}".format(url, html.status_code))
-        # with open('index.html', 'w', encoding='utf-8') as fd:
-        #     fd.write(html.text)
+        sleep(30)   # wait 30s
         return html.text
     except Exception as e:
         logger.info('getHtml()')
@@ -360,19 +360,6 @@ def getHtml(url, wd=BD_wd, url_id=URL_id):
 
 
 if __name__ == '__main__':
-
-    """提取目录"""
-    # print(extractChapters('http://99csw.com/book/8227/index.htm'))
-    # print(extractContent('http://99csw.com/book/8227/287617.htm'))
-    # for i in extractContent('http://99csw.com/book/8227/287617.htm'):
-    #     print(i)
-    """保存内容"""
-    # con = "sdfafdfafdasfdfafdbbdfererg1ff22116565fsd1ff321fer6rg541f32v3s2f1e65r1651df" \
-    #       "\nsdfdfa121232d1f321d5\tfafs123f51f65rf5\n"
-    # save(con, '123', 'qaaz')
-    """下载书籍"""
-    # download()
-
     """使用步骤"""
     # 1、输入书籍的名字 获取书籍的url
     book_name = '三体'
@@ -385,4 +372,3 @@ if __name__ == '__main__':
     # chapter_content = extractContent(chapters_list[0][1])
     # for content in chapter_content:
     #     print(content)
-    pass
