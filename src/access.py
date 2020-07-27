@@ -52,74 +52,6 @@ def shuffle(x):
         logger.warning("x is none")
 
 
-def save(content, book_name=None, chapter_name=None):
-    """save content
-
-    :param book_name: book name
-    :param chapter_name: chapter name in the book
-    :return True
-    """
-    try:
-        if chapter_name:
-            book_name = os.path.join(".\\book\\", book_name)
-            if not os.path.exists(book_name):
-                os.mkdir(book_name)
-            if os.path.exists(os.path.join(book_name, chapter_name)):
-                raise ValueError("The chapter already exists.")
-            chapter_name = os.path.join(book_name, chapter_name + '.txt')
-            with open(chapter_name, 'w', encoding='utf-8') as fd:
-                for co in content:
-                    if co:
-                        co = str(co + '\n')
-                        fd.write(co)
-                    else:
-                        continue
-                logger.info(chapter_name)
-        else:
-            file_name = os.path.join(".\\temp", content[:10]+'.txt')
-            with open(file_name, 'w', encoding='utf-8') as fd:
-                fd.write(content)
-            logger.info("\\temp\\{}".format(os.path.split(file_name)[1]))
-    except Exception as e:
-        logger.info("save()")
-        logger.warning(e)
-
-
-def download():
-    """download the book by url
-
-    :param url: chapter's url
-    :param name: chapter's name
-    :return:
-    """
-    global BD_wd
-    chapters_link = config.get("USER", "chapters_link")
-    chapters_name = config.get("USER", "chapters_name")
-
-    while True:
-        try:
-            if len(chapters_link) != len(chapters_name):
-                raise ValueError("The number of links({}) and chapters({}) is not equal. ".format(
-                    len(chapters_link), len(chapters_name)))
-            for IDX, name in enumerate(chapters_name):
-                # co = ''
-                # for content in extractContent(chapters_link[IDX]):
-                #     if content:
-                #         co += str(content + '\n')
-                #     else:
-                #         continue
-                name = str(IDX+1) + '.' + name
-                save(extractContent(chapters_link[IDX]), BD_wd, name)
-                config.revise("USER", "download_id", IDX)
-                config.save()
-        except Exception as e:
-            logger.info("download()")
-            logger.warning(e)
-            return False
-
-        return True
-
-
 def __shizongzuiContent(html):
     """extract www.shizongzui.cc article.
 
@@ -179,12 +111,6 @@ def extractContent(url):
     :param url: section's url --> str
     :param url_id: Ebook site id --> int
     :return: Each paragraph's content --> generator
-
-    co = extractContent('http://www.shizongzui.cc/santi/282.html')
-
-    for c in co:
-
-        print(c)
     """
     try:
         html = getHtml(url)
@@ -209,6 +135,7 @@ def __shizongzuiChapters(html):
 
     :param html: chapters html
     :return: chapter‘s name chapter‘s link --> list
+    速度中等 资源发布较好 站内不具备搜索能力
     """
     html = etree.HTML(html)
     book_span = html.xpath('/html/body/div[6]/span//*')
@@ -217,7 +144,6 @@ def __shizongzuiChapters(html):
         chapter_link = book_a.xpath("./@href")[0]
         chapter_name = book_a.text
         chapter_list.append([chapter_name, chapter_link])
-    # print(href[0], html_span.text)
     config.add('user', 'chapters_link', [link[1] for link in chapter_list])
     config.add('user', 'chapters_name', [name[0] for name in chapter_list])
     config.save()
@@ -229,6 +155,7 @@ def __luoxiaChapters(html):
 
     :param html: chapters html
     :return: chapter‘s name chapter‘s link --> list
+    拥有自己网站的广告
     """
     html = etree.HTML(html)
     book_div = html.xpath('/html/body/div[2]/div')
@@ -352,7 +279,7 @@ def getHtml(url, wd=BD_wd, url_id=URL_id):
         html = get(url, headers=header, timeout=7)
         html.encoding = 'utf-8'
         logger.info("{} \t {}".format(url, html.status_code))
-        sleep(30)   # wait 30s
+        sleep(30)   # wait 30s 不能影响网站的正常访问
         return html.text
     except Exception as e:
         logger.info('getHtml()')
@@ -360,15 +287,5 @@ def getHtml(url, wd=BD_wd, url_id=URL_id):
 
 
 if __name__ == '__main__':
-    """使用步骤"""
-    # 1、输入书籍的名字 获取书籍的url
-    book_name = '三体'
-    url_id = 1
-    book_link = bdExtractLink(book_name, url_id)
-    print(book_link)
-    # # 2、提取书籍的目录
-    # chapters_list = extractChapters(book_link, url_id)
-    # # 3、获取章节的内容
-    # chapter_content = extractContent(chapters_list[0][1])
-    # for content in chapter_content:
-    #     print(content)
+
+    pass
