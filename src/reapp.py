@@ -249,7 +249,7 @@ class APP(object):
 
 
 def main():
-    reader = APP('何金慧的智能爬取电子书')
+    reader = APP('智能爬取电子书')
     reader.menuBar()
     reader.contentBox()
     reader.run()
