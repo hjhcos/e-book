@@ -11,8 +11,8 @@ config.ini    # 初始文件 可以删除
 config.cfg    # 配置文件 不可修改 删除
 LOG.log       # 错误日志文件
 ```
-请不要频繁爬取网站，请不要频繁爬取网站，请不要频繁爬取网站。
-特别感谢一下网站的资源分享：<br>
+请不要频繁爬取网站，请不要频繁爬取网站，请不要频繁爬取网站。<br>
+特别感谢以下网站的资源分享：<br>
 [www.luoxia.com](www.luoxia.com)<br>
 [www.shizongzui.cc](www.shizongzui.cc)<br>
 [www.99csw.com](www.99csw.com)<br>
