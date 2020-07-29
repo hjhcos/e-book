@@ -50,6 +50,7 @@ def shuffle(x):
         logger.warning("x is none")
 
 
+
 def __shizongzuiContent(html):
     """extract www.shizongzui.cc article.
 
@@ -127,6 +128,39 @@ def extractContent(url):
         logger.info('extractContent()')
         logger.warning(e)
 
+        
+def save(content, book_name=None, chapter_name=None):
+    """save content
+
+    :param book_name: book name
+    :param chapter_name: chapter name in the book
+    :return True
+    """
+    try:
+        if chapter_name:
+            book_name = os.path.join(".\\book\\", book_name)
+            if not os.path.exists(book_name):
+                os.mkdir(book_name)
+            if os.path.exists(os.path.join(book_name, chapter_name)):
+                raise ValueError("The chapter already exists.")
+            chapter_name = os.path.join(book_name, chapter_name + '.txt')
+            with open(chapter_name, 'w', encoding='utf-8') as fd:
+                for co in content:
+                    if co:
+                        co = str(co + '\n')
+                        fd.write(co)
+                    else:
+                        continue
+                logger.info(chapter_name)
+        else:
+            file_name = os.path.join(".\\temp", content[:10]+'.txt')
+            with open(file_name, 'w', encoding='utf-8') as fd:
+                fd.write(content)
+            logger.info("\\temp\\{}".format(os.path.split(file_name)[1]))
+    except Exception as e:
+        logger.info("save()")
+        logger.warning(e)
+        
 
 def __shizongzuiChapters(html):
     """extract each chapter‘s name and chapter‘s link in the e-book
@@ -207,83 +241,4 @@ def extractChapters(url, url_id=1):
     try:
         html = getHtml(url)
 
-        if 'shizongzui.cc' in url or url_id == 0:
-            return __shizongzuiChapters(html)
-
-        elif 'luoxia.com' in url or url_id == 1:
-            return __luoxiaChapters(html)
-
-        elif '99csw.com' in url or url_id == 2:
-            return __csw99Chapters(html)
-        else:
-            raise ValueError("{} no value in e-book".format(url))
-
-    except Exception as e:
-        logger.info('extractChapters() url_id: {}'.format(url_id))
-        logger.warning(e)
-
-
-def bdExtractLink(wd=BD_wd, url_id=1, url=BD):
-    """baidu extract book sources
-
-    :param url: baidu url
-    :param wd:
-    :param url_id:
-    :return:
-    """
-    detection = True
-    count = 3
-    BD_list = ['&wd=' + wd, '&si=' + BD_si[url_id], '&ct=' + str(BD_ct), '&tn=' + BD_tn]
-    try:
-        while detection:
-            if 'baidu' in url:
-                BD_list = shuffle(BD_list)
-                if not '/link?' in url:
-                    count -= 1
-                    url = BD_search
-                    for bd in BD_list:
-                        url += bd
-                    print(BD_list)
-            try:
-                html = getHtml(url)
-                html = etree.HTML(html)
-                # get target link from baidu
-                html_data = html.xpath('/html/body/div/div[3]/div[1]/div[4]/div[1]/div[2]/a[1]/@href')
-                if html_data[0] is not None or count < 0:
-                    detection = False
-                if not detection:
-                    return html_data[0]
-            except:
-                continue
-    except Exception as e:
-        logger.info("bdExtractLink()")
-        logger.warning(e)
-        return False
-
-
-def getHtml(url, wd=BD_wd, url_id=URL_id):
-    """
-    to get page in the url.
-    :param url: web page's url --> str
-    :param wd: search(use) --> str
-    :param url_id: search(use) --> int
-    :return: page's content
-    """
-
-    header = {'User-Agent': 'Chrome/84.0.4147.89'}
-
-    try:
-        # 传说的“七秒效应”
-        html = get(url, headers=header, timeout=7)
-        html.encoding = 'utf-8'
-        logger.info("{} \t {}".format(url, html.status_code))
-        sleep(30)   # wait 30s 不能影响网站的正常访问
-        return html.text
-    except Exception as e:
-        logger.info('getHtml()')
-        logger.warning(e)
-
-
-if __name__ == '__main__':
-
-    pass
+        
