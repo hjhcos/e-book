@@ -240,5 +240,64 @@ def extractChapters(url, url_id=1):
 
     try:
         html = getHtml(url)
+        
+        
+def bdExtractLink(wd=BD_wd, url_id=1, url=BD):
+    """baidu extract book sources
+
+    :param url: baidu url
+    :param wd:
+    :param url_id:
+    :return:
+    """
+    detection = True
+    BD_list = ['&wd=' + wd, '&si=' + BD_si[url_id], '&ct=' + str(BD_ct), '&tn=' + BD_tn]
+    try:
+        while detection:
+            if 'baidu' in url:
+                BD_list = shuffle(BD_list)
+                if not '/link?' in url:
+                    url = BD_search
+                    for bd in BD_list:
+                        url += bd
+                    print(BD_list)
+            try:
+                html = getHtml(url)
+                html = etree.HTML(html)
+                # get target link from baidu
+                html_data = html.xpath('/html/body/div/div[3]/div[1]/div[4]/div[1]/div[2]/a[1]/@href')
+                if html_data[0] is not None:
+                    detection = False
+                if not detection:
+                    return html_data[0]
+            except:
+                continue
+    except Exception as e:
+        logger.info("bdExtractLink()")
+        logger.warning(e)
+        return False
+
+
+def getHtml(url, wd=BD_wd, url_id=URL_id):
+    """
+    to get page in the url.
+    :param url: web page's url --> str
+    :param wd: search(use) --> str
+    :param url_id: search(use) --> int
+    :return: page's content
+    """
+
+    header = {'User-Agent': 'Chrome/84.0.4147.89'}
+
+    try:
+        # 传说的“七秒效应”
+        html = get(url, headers=header, timeout=7)
+        sleep(2)   # wait 2s
+        html.encoding = 'utf-8'
+        logger.info("{} \t {}".format(url, html.status_code))
+        return html.text
+    except Exception as e:
+        logger.info('getHtml()')
+        logger.warning(e)
 
         
