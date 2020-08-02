@@ -1,6 +1,4 @@
 import os
 import sys
-import access
-import reapp
-import config
+from src import *
 sys.path.append(os.path.split(__file__)[0])
