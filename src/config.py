@@ -3,16 +3,14 @@ import sys
 import os
 import logging
 from configparser import ConfigParser
-# sys.path.append(os.path.split(__file__)[0])
 
 
 class Log(object):
     """record run log
 
-    if __name__ == '__main__':
-        conf = Log()
-        logger = conf.getLog()
-        logger.info('error!')
+    conf = Log()
+    logger = conf.getLog()
+    logger.info('error!')
     level: debug info warning error critical
     """
     def __init__(self):
@@ -116,7 +114,7 @@ class Config(object):
         """
         section = section.lower() if section else None
         option = option.lower() if option else None
-        if not section in self.config.sections():
+        if section not in self.config.sections():
             self.config.add_section(section)
             # raise ValueError("config have not the section: {} ".format(section))
         elif option:
@@ -132,7 +130,7 @@ class Config(object):
         """
         section = section.lower() if section else None
         option = option.lower() if option else None
-        if not section in self.config.sections():
+        if section not in self.config.sections():
             raise ValueError("config have not the section: {} ".format(section))
 
         if option:
@@ -140,7 +138,7 @@ class Config(object):
         else:
             raise ValueError("{} have not {}.".format(section, option))
 
-    def save(self, path="config.cfg"):
+    def save(self, path="config.ini"):
         """ save temp data to the file
 
         :param path: file path
@@ -150,22 +148,3 @@ class Config(object):
             self.config.write(file)
         return os.path.split(path)[1]
 
-
-if __name__ == '__main__':
-
-    log = Log()
-    # logger = log.getLog()
-    # logger.info("info.")
-
-    cf = Config("config.ini")
-    # section = "admin"
-    # option = "save"
-    # value = True
-    # print(cf.add(section, option, value))
-    # print(cf.get())
-    # print(cf.get(section))
-    # print(cf.get(section, option))
-    # print(cf.updata(section, option, value))
-    # # print(cf.remove(section, option))
-    # print(cf.save())
-    pass
