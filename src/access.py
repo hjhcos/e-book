@@ -3,9 +3,7 @@
 """
 @File    :   reader.py
 @Time    :   2020/07/19 18:10:09
-@Author  :   HJHCos
 @Version :   1.0
-@Contact :   3140546263@QQ.com
 """
 import os
 from time import sleep
