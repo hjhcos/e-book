@@ -1,4 +1,5 @@
 # e-book
+运行环境：PyCharm<br>
 在`src`文件夹下输入以下命令
 ```python
 python reapp.py
