@@ -73,9 +73,10 @@ def openBox(widget):
 def saveFile(widget):
     """保存内容"""
     try:
-        filename = os.path.join('..\\temp', widget.get("1.0"))
-        with open(filename+'.txt', 'w', encoding='utf-8') as file:
-            file.write(widget.get("1.0", "end"))
+        file_path = filedialog.asksaveasfilename(title=u'保存文件')
+        if file_path is not None:
+            with open(file=file_path, mode='w', encoding='utf-8') as fd:
+                fd.write(widget.get('1.0', tk.END))
     except Exception as e:
         raise FileNotFoundError(f"{__file__}:\n{e}")
 
