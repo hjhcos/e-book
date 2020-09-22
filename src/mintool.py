@@ -1,12 +1,16 @@
-import os
+from ctypes import windll
+
 import access
+import threading
 from time import sleep
 import tkinter as tk
-from tkinter import messagebox, filedialog, ttk
+from aip import AipSpeech
+from mutagen.mp3 import MP3
+from tkinter import messagebox, filedialog
 from config import Config
 
 
-cf = Config("config.cfg")
+cf = Config()
 admin = cf.get()[0]
 user = cf.get()[1]
 
@@ -23,6 +27,14 @@ def paste(editor):
     editor.event_generate('<<Paste>>')
 
 
+def save(widget):
+    file_path = filedialog.asksaveasfilename(title=u'保存文件')
+    content = widget.get('1.0', tk.END)
+    if file_path is not None:
+        with open(file=file_path, mode='w', encoding='utf-8') as file:
+            file.write(content)
+
+
 def rightKey(widget, event, editor):
     """功能：cut copy paste"""
     menu_bar = tk.Menu(widget, tearoff=False)  # 创建一个菜单
@@ -30,6 +42,7 @@ def rightKey(widget, event, editor):
     menu_bar.add_command(label='剪切', command=lambda: cut(editor))
     menu_bar.add_command(label='复制', command=lambda: copy(editor))
     menu_bar.add_command(label='粘贴', command=lambda: paste(editor))
+    menu_bar.add_command(label='保存', command=lambda: save(editor))
     menu_bar.post(event.x_root, event.y_root)
 
 
@@ -223,8 +236,6 @@ def downloadBook(widget, title="Python TK"):
         sleep(0.2)
         tk.messagebox.showinfo(message='已取消下载!')
 
-    pass
-
 
 def loadContent(widget):
     """加载内容"""
@@ -270,3 +281,23 @@ def directionKey(widget):
     widget.bind("<Down>", lambda x: changeChapter(widget, "Down"))
 
 
+def baiduSpeech(widget):
+    """语音功能"""
+    app_id = '19466508'
+    api_key = 'nGa68dQVWWzHVEAGGtDvOrXU'
+    secret_key = 'zvAKKiP7I2Fw2gGlGzz29QuZosS2lGSl'
+    ctp = 1
+    vol = 0
+    lang = 'zh'
+    for co in widget.get('0.0', 'end').split('\n'):
+        client = AipSpeech(appId=app_id, apiKey=api_key, secretKey=secret_key)
+        result = client.synthesis(co, lang, ctp, {
+            'vol': vol,
+        })
+        if not isinstance(result, dict):
+            with open('audio.mp3', 'wb') as f:
+                f.write(result)
+        audio = MP3(r'C:\Users\qaz\Desktop\电子书\src\audio.mp3')
+        print(audio.info.length)
+        windll.winmm.mciSendStringA(b'play audio.mp3', 0, 0, 0)
+        sleep(audio.info.length)

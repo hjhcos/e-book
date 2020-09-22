@@ -9,12 +9,9 @@
 7、实现左右翻页换取章节
 8、实现重新加载有加载框
 9、当叉掉加载框自动取消加载
+10、增加语音功能
 """
-import ctypes
-import inspect
-import time
 import mintool
-import threading
 from config import Log
 import tkinter as tk
 from tkinter import ttk, font, messagebox
@@ -53,53 +50,56 @@ class APP(object):
     def menuBar(self):
         """菜单栏"""
 
-        self.main_menu = tk.Menu(self.root, tearoff=False)
-        # 文件(完成)
-        file_menu = tk.Menu(self.main_menu, tearoff=False)
-        self.main_menu.add_cascade(label='文件', menu=file_menu)
-        file_menu.add_command(label='打开', command=lambda: mintool.openBox(self.text))
-        file_menu.add_command(label='保存', command=lambda: mintool.saveFile(self.text))
-
-        # 网址(完成)
-        url_menu = tk.Menu(self.main_menu, tearoff=False)
-        url_choice = tk.IntVar()
-        self.main_menu.add_cascade(label='网址', menu=url_menu)
-        url_choice.set(mintool.cf.get(mintool.admin, "url_id"))
-        url_menu.add_radiobutton(label='www.shizongzui.cc', variable=url_choice, value=0,
-                                 command=lambda: mintool.setUrlId(url_choice))
-        url_menu.add_radiobutton(label='www.luoxia.com', variable=url_choice, value=1,
-                                 command=lambda: mintool.setUrlId(url_choice))
-        url_menu.add_radiobutton(label='www.99csw.com', variable=url_choice, value=2,
-                                 command=lambda: mintool.setUrlId(url_choice))
-
-        # 目录(完成)
-        self.spinter = ttk.Combobox(self.root)
-
-        self.main_menu.add_command(label='目录', command=lambda: mintool.updateDir(self.spinter, self.entry))
-        self.spinter.bind("<Return>", lambda x: mintool.changeContent(self.spinter, self.text))
-
-        # 搜索(完成 百度老是拒绝访问, 已解决)
-        self.entry = tk.Entry(self.root)
-        self.main_menu.add_command(label='搜索', command=lambda: mintool.searchBox(self.entry, self.spinter))
-        self.entry.bind("<Return>", lambda x: mintool.searchContent(self.entry, self.text, url_choice))
-
-        # 下载(完成)
         try:
-            self.main_menu.add_command(label='下载', command=lambda: mintool.downloadBook(self.root, self.title))
+            self.main_menu = tk.Menu(self.root, tearoff=False)
+            # 文件(完成)
+            file_menu = tk.Menu(self.main_menu, tearoff=False)
+            self.main_menu.add_cascade(label='文件', menu=file_menu)
+            file_menu.add_command(label='打开', command=lambda: mintool.openBox(self.text))
+            file_menu.add_command(label='保存', command=lambda: mintool.saveFile(self.text))
+
+            # 网址(完成)
+            # url_menu = tk.Menu(self.main_menu, tearoff=False)
+            # url_choice = tk.IntVar()
+            # self.main_menu.add_cascade(label='网址', menu=url_menu)
+            # url_choice.set(mintool.cf.get(mintool.admin, "url_id"))
+            # url_menu.add_radiobutton(label='www.shizongzui.cc', variable=url_choice, value=0,
+            #                          command=lambda: mintool.setUrlId(url_choice))
+            # url_menu.add_radiobutton(label='www.luoxia.com', variable=url_choice, value=1,
+            #                          command=lambda: mintool.setUrlId(url_choice))
+            # url_menu.add_radiobutton(label='www.99csw.com', variable=url_choice, value=2,
+            #                          command=lambda: mintool.setUrlId(url_choice))
+
+            # 目录(完成)
+            self.spinter = ttk.Combobox(self.root)
+
+            self.main_menu.add_command(label='目录', command=lambda: mintool.updateDir(self.spinter, self.entry))
+            self.spinter.bind("<Return>", lambda x: mintool.changeContent(self.spinter, self.text))
+
+            # 语音(注销)
+            self.main_menu.add_command(label='播放', command=lambda: mintool.baiduSpeech(self.text))
+
+            # 搜索(完成 百度老是拒绝访问, 已解决)
+            self.entry = tk.Entry(self.root)
+            self.main_menu.add_command(label='搜索', command=lambda: mintool.searchBox(self.entry, self.spinter))
+            self.entry.bind("<Return>", lambda x: mintool.searchContent(self.entry, self.text, 1))
+
+            # 下载(完成)
+            # self.main_menu.add_command(label='下载', command=lambda: mintool.downloadBook(self.root, self.title))
+
+            # 重新加载
+            self.main_menu.add_command(label='重新加载', command=lambda: self.load())
+
+            self.root.config(menu=self.main_menu)
         except Exception as e:
             logger.warning(e)
-
-        # 重新加载
-        self.main_menu.add_command(label='重新加载', command=lambda: self.load())
-
-        self.root.config(menu=self.main_menu)
 
     def contentBox(self):
         """显示文本内容"""
         try:
             self.font = font.Font(family='楷体', size=15)
             self.text = tk.Text(self.root, font=self.font, width="750", height="25")
-            self.text.pack(ipady=30)
+            self.text.pack(pady=30, padx=40)
             wg = (self.spinter, self.entry)
             self.text.bind("<Button-1>", lambda x: mintool.hide(wg))
             self.text.bind("<Button-3>", lambda x: mintool.menuRK(self.root, self.text))
@@ -112,7 +112,7 @@ class APP(object):
         self.text.config(state=tk.DISABLED)
 
 
-def main(title="智能爬取电子书"):
+def main(title="电子书"):
     reader = APP(title)
     reader.menuBar()
     reader.contentBox()
