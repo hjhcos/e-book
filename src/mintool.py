@@ -297,7 +297,7 @@ def baiduSpeech(widget):
         if not isinstance(result, dict):
             with open('audio.mp3', 'wb') as f:
                 f.write(result)
-        audio = MP3(r'C:\Users\qaz\Desktop\电子书\src\audio.mp3')
+        audio = MP3(r'audio.mp3')
         print(audio.info.length)
         windll.winmm.mciSendStringA(b'play audio.mp3', 0, 0, 0)
         sleep(audio.info.length)
